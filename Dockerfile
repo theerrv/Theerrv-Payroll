@@ -23,8 +23,10 @@ RUN dotnet publish src/PayrollSaaS.API/PayrollSaaS.API.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# Default port for Render (override via PORT env var if needed)
+# Default port for Render
 ENV ASPNETCORE_HTTP_PORTS=8080
+# Use polling instead of inotify — required on Render's shared-kernel containers
+ENV DOTNET_USE_POLLING_FILE_WATCHER=1
 EXPOSE 8080
 
 COPY --from=build /app/publish .
