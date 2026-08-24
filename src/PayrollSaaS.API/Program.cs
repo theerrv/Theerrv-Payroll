@@ -35,10 +35,16 @@ try
         .WriteTo.Console());
 
     // ── Database ──
+    var connectionString = builder.Configuration.GetConnectionString("Payroll")
+        ?? throw new InvalidOperationException(
+            "ConnectionStrings:Payroll is not configured. " +
+            "Set the 'ConnectionStrings__Payroll' environment variable on Render " +
+            "or use dotnet user-secrets locally.");
+
     builder.Services.AddScoped<AuditInterceptor>();
     builder.Services.AddDbContext<PayrollDbContext>((sp, options) =>
     {
-        options.UseNpgsql(builder.Configuration.GetConnectionString("Payroll"),
+        options.UseNpgsql(connectionString,
                    npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "public"))
                .UseSnakeCaseNamingConvention()
                .AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
@@ -86,7 +92,7 @@ try
         .UseSimpleAssemblyNameTypeSerializer()
         .UseRecommendedSerializerSettings()
         .UsePostgreSqlStorage(options =>
-            options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("Payroll"))));
+            options.UseNpgsqlConnection(connectionString)));
     builder.Services.AddHangfireServer();
     builder.Services.AddScoped<PfEligibilityJob>();
 
