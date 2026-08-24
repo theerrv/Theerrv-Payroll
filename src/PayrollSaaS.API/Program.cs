@@ -136,13 +136,13 @@ try
         Authorization = [new HangfireAuthFilter()]
     });
 
-    // ── Auto-migrate in development ──
-    if (app.Environment.IsDevelopment())
+    // ── Migrate on every startup (dev + production) ──
+    using (var scope = app.Services.CreateScope())
     {
-        using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<PayrollDbContext>();
         await db.Database.MigrateAsync();
-        await SeedData.SeedAsync(db);
+        if (app.Environment.IsDevelopment())
+            await SeedData.SeedAsync(db);
     }
 
     // ── Recurring jobs ──
