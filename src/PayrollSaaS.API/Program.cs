@@ -96,6 +96,23 @@ try
     builder.Services.AddHangfireServer();
     builder.Services.AddScoped<PfEligibilityJob>();
 
+    // ── CORS — allow the React dev server (and production origin) ──
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("FrontendPolicy", policy =>
+        {
+            var origins = builder.Configuration
+                .GetSection("Cors:AllowedOrigins")
+                .Get<string[]>()
+                ?? ["http://localhost", "http://localhost:5173", "http://localhost:5174", "http://localhost:3000"];
+
+            policy.WithOrigins(origins)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
+    });
+
     // ── Controllers + JSON ──
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
@@ -131,6 +148,7 @@ try
         });
     }
 
+    app.UseCors("FrontendPolicy");
     app.UseSerilogRequestLogging();
     app.UseAuthentication();
     app.UseAuthorization();
