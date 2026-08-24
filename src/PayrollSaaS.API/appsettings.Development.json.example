@@ -1,0 +1,8 @@
+{
+  "ConnectionStrings": {
+    "Payroll": "Host=aws-1-ap-south-1.pooler.supabase.com;Port=5432;Database=postgres;Username=postgres.<projectref>;Password=<your-password>;Search Path=payroll"
+  },
+  "Jwt": {
+    "Key": "replace-with-a-32-byte-secret-key-here!!"
+  }
+}
