@@ -133,6 +133,7 @@ try
     var app = builder.Build();
 
     // ── Middleware pipeline ──
+    app.UseCors("FrontendPolicy");   // must be first — before exception handler and auth
     app.UseExceptionHandler();
 
     if (app.Environment.IsDevelopment())
@@ -148,7 +149,6 @@ try
         });
     }
 
-    app.UseCors("FrontendPolicy");
     app.UseSerilogRequestLogging();
     app.UseAuthentication();
     app.UseAuthorization();
